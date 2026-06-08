@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bear-Lock Mailer - Caesar Cipher Upgraded</title>
-<link rel="stylesheet" href="/static/css/style.css">
+    <title>Bear-Lock Mailer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
@@ -22,13 +22,13 @@
 
             <form action="/" method="POST">
                 <div class="input-group">
-                    <label>🐻 NAMA PENGIRIM</label>
+                    <label>🐻 NAMA DEPAN (PENGIRIM)</label>
                     <input type="text" name="nama" placeholder="contoh: jule" required>
                 </div>
 
                 <div class="input-group">
-                    <label>🍯 PESAN RAHASIA / TUGAS</label>
-                    <input type="text" name="pesan" placeholder="contoh: ini tugas kelompok kami pak" required>
+                    <label>🍯 NAMA BELAKANG (PESAN RAHASIA)</label>
+                    <input type="text" name="pesan" placeholder="contoh: aja" required>
                 </div>
 
                 <div class="input-group">
@@ -37,7 +37,7 @@
                 </div>
 
                 <button type="submit" class="btn-encrypt">
-                    🔒 ENKRIPSI & KIRIM KE WA
+                    🔒 ENKRIPSI SEKARANG
                 </button>
             </form>
         </div>
