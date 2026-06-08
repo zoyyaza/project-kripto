@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bear-Lock Mailer - Caesar Cipher Upgraded</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="header-title">
+            <h2>BEAR-LOCK MAILER</h2>
+            <div class="subtitle">✨ ubah nama panjangmu jadi kode rahasia & kirim ke WA ✨</div>
+        </div>
+
+        <div class="crypto-card">
+            <div class="card-title">
+                🔒 ENKRIPSI DOSEN PREMIUM
+            </div>
+            <hr class="divider">
+
+            <form action="/" method="POST">
+                <div class="input-group">
+                    <label>🐻 NAMA PENGIRIM</label>
+                    <input type="text" name="nama" placeholder="contoh: jule" required>
+                </div>
+
+                <div class="input-group">
+                    <label>🍯 PESAN RAHASIA / TUGAS</label>
+                    <input type="text" name="pesan" placeholder="contoh: ini tugas kelompok kami pak" required>
+                </div>
+
+                <div class="input-group">
+                    <label>🔑 KUNCI RAHASIA (KEY)</label>
+                    <input type="text" name="kunci" placeholder="contoh: BEARHONEY" required>
+                </div>
+
+                <button type="submit" class="btn-encrypt">
+                    🔒 ENKRIPSI & KIRIM KE WA
+                </button>
+            </form>
+        </div>
+
+        <div class="footer-bar">
+            ✨ 💖 made with love • bear & honey • double layer cryptography 💖 ✨
+        </div>
+    </div>
+
+</body>
+</html>
