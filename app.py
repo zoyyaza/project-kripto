@@ -2,7 +2,7 @@ from flask import Flask, render_template
 import os
 
 app = Flask(__name__)
-
+# Kode UAS Kriptografi Bear-Lock Mailer
 @app.route('/')
 def home():
     return "Halo! Ini adalah web Flask baru saya yang siap di-deploy dari nol."
