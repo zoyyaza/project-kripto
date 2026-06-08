@@ -3,7 +3,7 @@ import os
 import base64
 import urllib.parse
 
-app = Flask(__name__)
+app app = Flask(__name__, static_folder='static', static_url_path='/static')
 
 # RUMUS ENKRIPSI LAPIS 1: VIGENERE ASCII
 def vigenere_encrypt(plaintext, key):
