@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives import padding
 
 app = Flask(__name__)
 
-# --- ENGINE CRYPTO BARU: AES-256 CBC MODE (MENGGANTIKAN VIGENERE) ---
+# --- ENGINE CRYPTO BARU: AES-256 CBC MODE ---
 def get_aes_key_and_iv(otp_string):
     """Mengubah OTP 6-digit menjadi Kunci 32-byte (AES-256) & IV 16-byte menggunakan SHA-256"""
     hashed = hashlib.sha256(otp_string.encode('utf-8')).digest()
@@ -29,7 +29,6 @@ def aes_encrypt(plaintext, otp_key):
     encryptor = cipher.encryptor()
     ciphertext = encryptor.update(padded_data) + encryptor.finalize()
     
-    # Mengembalikan hasil dalam bentuk string hexadecimal (angka & huruf a-f)
     return ciphertext.hex()
 
 def aes_decrypt(ciphertext_hex, otp_key):
@@ -47,8 +46,7 @@ def aes_decrypt(ciphertext_hex, otp_key):
         plaintext = unpadder.update(decrypted_padded_data) + unpadder.finalize()
         return plaintext.decode('utf-8')
     except Exception:
-        # TAKTIK PERTAHANAN: Jika OTP salah, proses unpadding pasti gagal.
-        # Kita paksa sistem memunculkan teks sampah yang acak-acakan banget dari depan sampai belakang!
+        # Jika OTP salah, paksa sistem mengeluarkan teks acak buatan
         karakter_acak = "#$%^&*@!~+=?><ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
         return "❌ [SECURITY_ERROR] " + "".join(random.choices(karakter_acak, k=30))
 
