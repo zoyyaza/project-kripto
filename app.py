@@ -83,7 +83,7 @@ def generate_link():
     base_url = request.url_root
     full_crypto_link = f"{base_url}decrypt_link?token={secure_token}"
     
-    wa_text = f"<b>🔒 BEAR-LOCK SECURE MAIL (AES-256)</b>\n\nHalo, ada pesan rahasia khusus untuk Anda dari *{nama}*.\n\n🔗 *Link Akses*:\n{full_crypto_link}\n\n🔑 *KODE OTP VALIDASI ANDA*:\n{otp_key}\n\n<i>(Pesan dilindungi enkripsi blok AES-256, jangan bocorkan OTP ini)</i>"
+    wa_text = f"<b> BEAR-LOCK SECURE MAIL (AES-256)</b>\n\nHalo, ada pesan rahasia khusus untuk Anda dari *{nama}*.\n\n🔗 *Link Akses*:\n{full_crypto_link}\n\n🔑 *KODE OTP VALIDASI ANDA*:\n{otp_key}\n\n<i>(Pesan dilindungi enkripsi blok AES-256, jangan bocorkan OTP ini)</i>"
     
     wa_direct_link = f"https://api.whatsapp.com/send?phone={whatsapp}&text={urllib.parse.quote(wa_text)}"
     
