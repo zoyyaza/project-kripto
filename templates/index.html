@@ -37,13 +37,7 @@
             padding-bottom: 20px;
         }
 
-        h1 {
-            font-family: 'Fredoka', sans-serif;
-            color: #533e31;
-            margin: 0;
-            font-size: 28px;
-            letter-spacing: 0.5px;
-        }
+        h1 { font-family: 'Fredoka', sans-serif; color: #533e31; margin: 0; font-size: 26px; }
 
         .grid-layout {
             display: grid;
@@ -52,51 +46,31 @@
             margin-top: 20px;
         }
 
-        @media (max-width: 650px) {
-            .grid-layout { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 650px) { .grid-layout { grid-template-columns: 1fr; } }
 
         .panel-title {
             font-family: 'Fredoka', sans-serif;
-            font-size: 15px;
+            font-size: 14px;
             color: #bb9371;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 6px;
-            text-transform: uppercase;
         }
 
-        .input-group {
-            margin-bottom: 18px;
-        }
-
-        .input-group label {
-            font-size: 12px;
-            font-weight: 700;
-            display: block;
-            margin-bottom: 6px;
-            color: #533e31;
-        }
+        .input-group { margin-bottom: 18px; }
+        .input-group label { font-size: 12px; font-weight: 700; display: block; margin-bottom: 6px; }
 
         .input-box {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #fceddb;
             border-radius: 15px;
-            color: #533e31;
             font-family: 'Quicksand', sans-serif;
             font-size: 14px;
             font-weight: 600;
             box-sizing: border-box;
             background-color: #ffffff;
-            transition: all 0.3s ease;
-        }
-
-        .input-box:focus {
-            outline: none;
-            border-color: #f3b1be;
-            box-shadow: 0 0 10px rgba(243, 177, 190, 0.4);
         }
 
         .output-panel {
@@ -107,7 +81,6 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            box-sizing: border-box;
         }
 
         .live-preview {
@@ -120,7 +93,6 @@
             color: #fceddb;
             word-break: break-all;
             border-left: 5px solid #f3b1be;
-            box-sizing: border-box;
         }
 
         .btn {
@@ -132,30 +104,16 @@
             font-size: 14px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.2s;
-            margin-top: 10px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
             box-sizing: border-box;
         }
 
-        .btn-generate { 
-            background: linear-gradient(135deg, #bb9371 0%, #f3b1be 100%); 
-            color: white; 
-            box-shadow: 0 4px 10px rgba(187, 147, 113, 0.2);
-        }
-        
-        .btn-wa { 
-            background-color: #25D366; 
-            color: white; 
-            display: none; 
-            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2);
-        }
-        
-        .btn-back { background-color: #533e31; color: white; }
-
-        .btn:hover { transform: translateY(-2px); opacity: 0.95; }
+        .btn-generate { background: linear-gradient(135deg, #bb9371 0%, #f3b1be 100%); color: white; }
+        .btn-wa { background-color: #25D366; color: white; display: none; }
+        .btn-back { background-color: #533e31; color: white; margin-top: 15px; }
+        .btn-decrypt { background-color: #f3b1be; color: #533e31; margin-top: 10px; }
 
         .success-box {
             background-color: #e8f5e9;
@@ -163,16 +121,18 @@
             padding: 25px;
             border-radius: 25px;
             color: #2e7d32;
+        }
+
+        .challenge-box {
+            background-color: #fffde7;
+            border: 2px solid #fff59d;
+            padding: 25px;
+            border-radius: 25px;
+            color: #f57f17;
             text-align: left;
         }
 
-        .footer-bar {
-            text-align: center;
-            font-size: 11px;
-            color: #a07a66;
-            margin-top: 25px;
-            font-weight: bold;
-        }
+        .footer-bar { text-align: center; font-size: 11px; color: #a07a66; margin-top: 25px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -182,68 +142,82 @@
         {% if not mode %}
         <div class="header">
             <h1>🛡️ BEAR-LOCK CRYPTO DASHBOARD</h1>
-            <div style="font-size: 12px; color: #a07a66; margin-top: 6px; font-weight: bold;">✨ ubah nama panjangmu jadi kode rahasia & kirim ke WA ✨</div>
+            <div style="font-size: 12px; color: #a07a66; margin-top: 6px; font-weight: bold;">✨ Sistem Distribusi Surat Rahasia Dua Lapis Aman ✨</div>
         </div>
 
         <div class="grid-layout">
             <div>
                 <div class="panel-title">📥 DATA INPUT & KUNCI</div>
-                
                 <div class="input-group">
                     <label>👤 NAMA PENGIRIM:</label>
                     <input type="text" id="nama" class="input-box" placeholder="Contoh: Jule" required>
                 </div>
-                
                 <div class="input-group">
                     <label>🍯 PESAN RAHASIA / TUGAS:</label>
                     <input type="text" id="pesan" class="input-box" placeholder="Ketik pesan rahasia di sini..." required>
                 </div>
-                
                 <div class="input-group">
                     <label>🔑 KUNCI RAHASIA (VIGENERE):</label>
                     <input type="text" id="kunci" class="input-box" placeholder="Contoh: KURMA" required>
                 </div>
-
                 <button type="button" class="btn btn-generate" onclick="processCrypto()">🔒 PROSES ENKRIPSI AMAN</button>
             </div>
 
             <div class="output-panel">
                 <div>
-                    <div class="panel-title">🖥️ LOG GENERATED TOKEN (BASE64)</div>
+                    <div class="panel-title">🖥️ LOG CIPHERTEXT PAYLOAD (BASE64)</div>
                     <div id="token-box" class="live-preview">Menunggu proses enkripsi data...</div>
                 </div>
-
                 <div>
-                    <a id="wa-btn" href="#" target="_blank" class="btn btn-wa">💬 RELEASING TOKEN TO WHATSAPP</a>
+                    <a id="wa-btn" href="#" target="_blank" class="btn btn-wa">💬 RELEASE CIPHERTEXT TO WA</a>
                 </div>
             </div>
         </div>
         {% endif %}
 
-        {% if mode == 'decrypt' %}
+        {% if mode == 'challenge' %}
         <div class="header">
-            <h1>🔓 BEAR-LOCK AUTOMATIC DECRYPTOR</h1>
-            <div style="font-size: 12px; color: #a07a66; margin-top: 6px; font-weight: bold;">Data Berhasil Dibongkar Secara Valid</div>
+            <h1>🚨 SECURITY CHALLENGE INSTALLED</h1>
+            <div style="font-size: 12px; color: #cc3333; margin-top: 6px; font-weight: bold;">Jalur Terkunci! Verifikasi Identitas Anda</div>
+        </div>
+
+        <div class="challenge-box">
+            <h3 style="margin-top: 0; font-family: 'Fredoka', sans-serif; color: #d84315;">🔒 Akses Ditahan</h3>
+            <p>Ada pesan rahasia dari <strong>{{ nama }}</strong>. Untuk membaca pesan ini, Anda wajib memasukkan Kunci Rahasia yang valid.</p>
+            
+            <form action="/decrypt_link?token={{ token }}" method="POST">
+                <div class="input-group" style="margin-top: 15px;">
+                    <label style="color: #d84315;">🔑 MASUKKAN KUNCI DEKRIPSI:</label>
+                    <input type="text" name="kunci_input" class="input-box" style="border-color: #ffe082;" placeholder="Ketik kunci di sini..." required>
+                </div>
+                <button type="submit" class="btn btn-decrypt">🔓 BONGKAR & BACA PESAN</button>
+            </form>
+        </div>
+        {% endif %}
+
+        {% if mode == 'success' %}
+        <div class="header">
+            <h1>🔓 OUTPUT INTERPRETATION DATA</h1>
+            <div style="font-size: 12px; color: #a07a66; margin-top: 6px; font-weight: bold;">Hasil Pemrosesan Mesin Kriptografi</div>
         </div>
 
         <div class="success-box">
-            <h3 style="margin-top: 0; font-family: 'Fredoka', sans-serif;">✅ Enkripsi Lapis Ganda Terbuka!</h3>
-            <p><strong>👤 Pengirim Aman:</strong> {{ nama }}</p>
-            <p><strong>🔑 Kunci Validasi:</strong> <span style="font-family: 'Fira Code', monospace; background: #c8e6c9; padding: 2px 6px; border-radius: 5px;">{{ kunci }}</span></p>
+            <h3 style="margin-top: 0; font-family: 'Fredoka', sans-serif;">🎯 Proses Selesai</h3>
+            <p><strong>👤 Pengirim:</strong> {{ nama }}</p>
+            <p><strong>🔑 Kunci Digunakan:</strong> <span style="font-family: 'Fira Code', monospace; background: #c8e6c9; padding: 2px 6px; border-radius: 5px;">{{ kunci }}</span></p>
+            <p style="font-size: 11px; color: #666; font-style: italic;">Note: Jika tulisan di bawah ini berupa teks hancur abjad acak, berarti Kunci Rahasia yang Anda masukkan SALAH.</p>
             <hr style="border: 0; border-top: 1px solid #81c784; margin: 15px 0;">
-            <p><strong>✉️ ISI PESAN ASLI:</strong></p>
-            <div style="background: white; padding: 15px; border-radius: 12px; font-weight: 600; color: #1b5e20; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+            <p><strong>✉️ ISI PESAN SEBENARNYA:</strong></p>
+            <div style="background: white; padding: 15px; border-radius: 12px; font-weight: 600; color: #1b5e20;">
                 {{ pesan }}
             </div>
         </div>
-
         <a href="/" class="btn btn-back">⬅️ KEMBALI KE DASHBOARD UTAMA</a>
         {% endif %}
 
         <div class="footer-bar">
-            ✨ made with love • bear & honey • double layer cryptography 💖 ✨
+            ✨ made with love • bear & honey • advanced dynamic authentication 💖 ✨
         </div>
-
     </div>
 
     <script>
@@ -274,8 +248,7 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert("Gagal terhubung ke server kripto.");
+                alert("Gagal terhubung ke server.");
             });
         }
     </script>

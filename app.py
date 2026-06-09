@@ -4,13 +4,12 @@ import urllib.parse
 
 app = Flask(__name__)
 
-# --- FUNGSI KRIPTOR (VIGENERE + BASE64) ---
+# --- FUNGSI KRIPTOR (VIGENERE) ---
 def vigenere_encrypt(plaintext, key):
     cipher_text = []
     key = key.upper()
     for i, char in enumerate(plaintext):
         if char.isalpha():
-            # Menghitung pergeseran berdasarkan huruf kunci
             shift = ord(key[i % len(key)]) - ord('A')
             if char.isupper():
                 cipher_text.append(chr((ord(char) - ord('A') + shift) % 26 + ord('A')))
@@ -34,12 +33,11 @@ def vigenere_decrypt(ciphertext, key):
             plain_text.append(char)
     return "".join(plain_text)
 
-# --- ROUTE UTAMA (DASHBOARD) ---
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
 
-# --- 1. API UNTUK GENERATE LINK OTOMATIS ---
+# --- 1. GENERATE LINK AMAN (TANPA MEMASUKKAN KUNCI DI LINK) ---
 @app.route('/generate_link', methods=['POST'])
 def generate_link():
     data = request.json
@@ -50,50 +48,52 @@ def generate_link():
     if not pesan or not kunci:
         return jsonify({'error': 'Pesan dan Kunci wajib diisi'}), 400
         
-    # Lapis 1: Enkripsi Vigenere
+    # Lapis 1: Enkripsi pesan asli dengan Vigenere
     vigenere_result = vigenere_encrypt(pesan, kunci)
     
-    # Lapis 2: Satukan data (Nama|VigenereText|Kunci) lalu di-Base64 agar menjadi Token
-    raw_token = f"{nama}|{vigenere_result}|{kunci}"
-    token_bytes = raw_token.encode('utf-8')
-    secure_token = base64.b64encode(token_bytes).decode('utf-8')
+    # Lapis 2: Token hanya berisi (Nama Pengirim | Teks Terenkripsi Vigenere) -> KUNCI TIDAK IKUT DIMASUKKAN
+    raw_token = f"{nama}|{vigenere_result}"
+    secure_token = base64.b64encode(raw_token.encode('utf-8')).decode('utf-8')
     
-    # Buat URL otomatis menuju domain Railway kita sendiri
     base_url = request.url_root
     full_crypto_link = f"{base_url}decrypt_link?token={secure_token}"
     
-    # Buat teks pesan otomatis untuk dikirim ke WhatsApp
-    wa_text = f"🔒 *BEAR-LOCK SECURE MAIL*\n\nAda pesan rahasia dari *{nama}*.\nKlik link di bawah ini untuk mendekripsi secara otomatis:\n\n{full_crypto_link}"
+    wa_text = f"🔒 *BEAR-LOCK SECURE MAIL*\n\nAda pesan rahasia dari *{nama}*.\n\n⚠️ Link ini dilindungi enkripsi.\nSilakan klik tautan di bawah ini dan masukkan Kunci Rahasia yang sudah disepakati untuk membaca isi pesan:\n\n{full_crypto_link}"
     wa_api_link = f"https://api.whatsapp.com/send?text={urllib.parse.quote(wa_text)}"
     
     return jsonify({
         'token': secure_token,
-        'crypto_link': full_crypto_link,
         'wa_link': wa_api_link
     })
 
-# --- 2. API UNTUK DEKRIPSI OTOMATIS LEWAT LINK ---
-@app.route('/decrypt_link', methods=['GET'])
+# --- 2. HALAMAN TANTANGAN KUNCI & PROSES DEKRIPSI ---
+@app.route('/decrypt_link', methods=['GET', 'POST'])
 def decrypt_link():
     token = request.args.get('token', '')
     if not token:
-        return "Token tidak valid atau tidak ditemukan!", 400
+        return "Token tidak valid!", 400
         
     try:
-        # Bongkar Lapis 2: Decode Base64 Token
-        decoded_bytes = base64.b64decode(token.encode('utf-8'))
-        decoded_str = decoded_bytes.decode('utf-8')
+        # Bongkar Base64 untuk mengambil nama dan ciphertext-nya
+        decoded_str = base64.b64decode(token.encode('utf-8')).decode('utf-8')
+        nama, vigenere_result = decoded_str.split('|')
+    except:
+        return "Token rusak atau dimanipulasi!", 400
+
+    # Jika user baru klik link dari WA (Masih metode GET)
+    if request.method == 'GET':
+        return render_template('index.html', mode='challenge', nama=nama, token=token)
         
-        # Pecah kembali datanya menggunakan pembatas "|"
-        nama, vigenere_result, kunci = decoded_str.split('|')
-        
-        # Bongkar Lapis 1: Kembalikan Vigenere ke Teks Asli
-        original_pesan = vigenere_decrypt(vigenere_result, kunci)
-        
-        # Kirim data hasil bongkaran ke halaman khusus preview
-        return render_template('index.html', mode='decrypt', nama=nama, pesan=original_pesan, kunci=kunci)
-    except Exception as e:
-        return "Gagal mendekripsi data. Token telah rusak atau dimanipulasi!", 400
+    # Jika user sudah mengetikkan kunci lalu klik tombol "BONGKAR" (Metode POST)
+    kunci_input = request.form.get('kunci_input', '')
+    
+    # Coba dekripsi menggunakan kunci yang diinput user
+    original_pesan = vigenere_decrypt(vigenere_result, kunci_input)
+    
+    # Validasi sederhana: Jika hasilnya hancur atau tidak ada huruf alfabet yang terbaca normal
+    # Kita kembalikan mode sukses tapi teksnya berupa kode hancur, atau beri tahu kuncinya salah.
+    # Di Vigenere klasik, salah kunci = hasil teksnya jadi karakter acak berantakan.
+    return render_template('index.html', mode='success', nama=nama, pesan=original_pesan, kunci=kunci_input)
 
 if __name__ == '__main__':
     app.run(debug=True)
