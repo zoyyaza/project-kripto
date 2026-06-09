@@ -48,7 +48,7 @@ def aes_decrypt(ciphertext_hex, otp_key):
     except Exception:
         # Jika OTP salah, paksa sistem mengeluarkan teks acak buatan
         karakter_acak = "#$%^&*@!~+=?><ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-        return "❌ [SECURITY_ERROR] " + "".join(random.choices(karakter_acak, k=30))
+        return "eits no no kepo ya" + "".join(random.choices(karakter_acak, k=30))
 
 # --- ROUTES FLASK ---
 @app.route('/', methods=['GET'])
