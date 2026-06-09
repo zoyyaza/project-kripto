@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bear-Lock Advanced Mailer</title>
+    <title>Bear-Lock OTP Mailer</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
@@ -141,35 +141,35 @@
         
         {% if not mode %}
         <div class="header">
-            <h1>🛡️ BEAR-LOCK CRYPTO DASHBOARD</h1>
-            <div style="font-size: 12px; color: #a07a66; margin-top: 6px; font-weight: bold;">✨ Sistem Distribusi Surat Rahasia Dua Lapis Aman ✨</div>
+            <h1>🛡️ BEAR-LOCK MULTI-CHANNEL OTP MAILER</h1>
+            <div style="font-size: 12px; color: #a07a66; margin-top: 6px; font-weight: bold;">✨ Enkripsi Kriptografi dengan Autentikasi OTP Otomatis ✨</div>
         </div>
 
         <div class="grid-layout">
             <div>
-                <div class="panel-title">📥 DATA INPUT & KUNCI</div>
+                <div class="panel-title">📥 DATA HUBUNGAN LANGSUNG</div>
                 <div class="input-group">
                     <label>👤 NAMA PENGIRIM:</label>
                     <input type="text" id="nama" class="input-box" placeholder="Contoh: Jule" required>
                 </div>
                 <div class="input-group">
-                    <label>🍯 PESAN RAHASIA / TUGAS:</label>
-                    <input type="text" id="pesan" class="input-box" placeholder="Ketik pesan rahasia di sini..." required>
+                    <label>📱 NO WHATSAPP TUJUAN:</label>
+                    <input type="text" id="whatsapp" class="input-box" placeholder="Contoh: 08123456789" required>
                 </div>
                 <div class="input-group">
-                    <label>🔑 KUNCI RAHASIA (VIGENERE):</label>
-                    <input type="text" id="kunci" class="input-box" placeholder="Contoh: KURMA" required>
+                    <label>🍯 ISI PESAN RAHASIA:</label>
+                    <input type="text" id="pesan" class="input-box" placeholder="Ketik isi laporan/pesan rahasia..." required>
                 </div>
-                <button type="button" class="btn btn-generate" onclick="processCrypto()">🔒 PROSES ENKRIPSI AMAN</button>
+                <button type="button" class="btn btn-generate" onclick="processCrypto()">🚀 GENERATE & BYPASS TO WA</button>
             </div>
 
             <div class="output-panel">
                 <div>
-                    <div class="panel-title">🖥️ LOG CIPHERTEXT PAYLOAD (BASE64)</div>
-                    <div id="token-box" class="live-preview">Menunggu proses enkripsi data...</div>
+                    <div class="panel-title">🖥️ SYSTEM SYSTEM PAYLOAD TOKEN (BASE64)</div>
+                    <div id="token-box" class="live-preview">Menunggu perintah eksekusi data...</div>
                 </div>
                 <div>
-                    <a id="wa-btn" href="#" target="_blank" class="btn btn-wa">💬 RELEASE CIPHERTEXT TO WA</a>
+                    <a id="wa-btn" href="#" target="_blank" class="btn btn-wa">💬 TRANSMIT DIRECT TO TARGET NUMBER</a>
                 </div>
             </div>
         </div>
@@ -177,35 +177,34 @@
 
         {% if mode == 'challenge' %}
         <div class="header">
-            <h1>🚨 SECURITY CHALLENGE INSTALLED</h1>
-            <div style="font-size: 12px; color: #cc3333; margin-top: 6px; font-weight: bold;">Jalur Terkunci! Verifikasi Identitas Anda</div>
+            <h1>🚨 MULTI-FACTOR OTP CHALLENGE</h1>
+            <div style="font-size: 12px; color: #cc3333; margin-top: 6px; font-weight: bold;">Jalur Komunikasi Diamankan</div>
         </div>
 
         <div class="challenge-box">
-            <h3 style="margin-top: 0; font-family: 'Fredoka', sans-serif; color: #d84315;">🔒 Akses Ditahan</h3>
-            <p>Ada pesan rahasia dari <strong>{{ nama }}</strong>. Untuk membaca pesan ini, Anda wajib memasukkan Kunci Rahasia yang valid.</p>
+            <h3 style="margin-top: 0; font-family: 'Fredoka', sans-serif; color: #d84315;">🔒 Token Validasi Diperlukan</h3>
+            <p>Halo, ada kiriman pesan terenkripsi dari <strong>{{ nama }}</strong>. Untuk membuka brankas, silakan masukkan 6 digit kode OTP yang tertera pada chat WhatsApp Anda.</p>
             
             <form action="/decrypt_link?token={{ token }}" method="POST">
                 <div class="input-group" style="margin-top: 15px;">
-                    <label style="color: #d84315;">🔑 MASUKKAN KUNCI DEKRIPSI:</label>
-                    <input type="text" name="kunci_input" class="input-box" style="border-color: #ffe082;" placeholder="Ketik kunci di sini..." required>
+                    <label style="color: #d84315;">🔑 MASUKKAN 6 DIGIT OTP KUNCI:</label>
+                    <input type="text" name="otp_input" class="input-box" style="border-color: #ffe082; font-family: 'Fira Code', monospace; text-align: center; font-size: 18px; letter-spacing: 4px;" placeholder="******" maxlength="6" required>
                 </div>
-                <button type="submit" class="btn btn-decrypt">🔓 BONGKAR & BACA PESAN</button>
+                <button type="submit" class="btn btn-decrypt">🔓 DEKRIPSI PAYLOAD SEKARANG</button>
             </form>
         </div>
         {% endif %}
 
         {% if mode == 'success' %}
         <div class="header">
-            <h1>🔓 OUTPUT INTERPRETATION DATA</h1>
-            <div style="font-size: 12px; color: #a07a66; margin-top: 6px; font-weight: bold;">Hasil Pemrosesan Mesin Kriptografi</div>
+            <h1>🔓 DATA INTERPRETATION DECRYPTED</h1>
+            <div style="font-size: 12px; color: #a07a66; margin-top: 6px; font-weight: bold;">Data Autentikasi Berhasil Dicocokkan</div>
         </div>
 
         <div class="success-box">
-            <h3 style="margin-top: 0; font-family: 'Fredoka', sans-serif;">🎯 Proses Selesai</h3>
-            <p><strong>👤 Pengirim:</strong> {{ nama }}</p>
-            <p><strong>🔑 Kunci Digunakan:</strong> <span style="font-family: 'Fira Code', monospace; background: #c8e6c9; padding: 2px 6px; border-radius: 5px;">{{ kunci }}</span></p>
-            <p style="font-size: 11px; color: #666; font-style: italic;">Note: Jika tulisan di bawah ini berupa teks hancur abjad acak, berarti Kunci Rahasia yang Anda masukkan SALAH.</p>
+            <h3 style="margin-top: 0; font-family: 'Fredoka', sans-serif;">🎯 Berhasil Dibongkar</h3>
+            <p><strong>👤 Pengirim Valid:</strong> {{ nama }}</p>
+            <p><strong>🔑 Token OTP Validasi:</strong> <span style="font-family: 'Fira Code', monospace; background: #c8e6c9; padding: 2px 6px; border-radius: 5px;">{{ kunci }}</span></p>
             <hr style="border: 0; border-top: 1px solid #81c784; margin: 15px 0;">
             <p><strong>✉️ ISI PESAN SEBENARNYA:</strong></p>
             <div style="background: white; padding: 15px; border-radius: 12px; font-weight: 600; color: #1b5e20;">
@@ -216,25 +215,25 @@
         {% endif %}
 
         <div class="footer-bar">
-            ✨ made with love • bear & honey • advanced dynamic authentication 💖 ✨
+            ✨ made with love • bear & honey • advanced automated OTP system 💖 ✨
         </div>
     </div>
 
     <script>
         function processCrypto() {
             const nama = document.getElementById('nama').value;
+            const whatsapp = document.getElementById('whatsapp').value;
             const pesan = document.getElementById('pesan').value;
-            const kunci = document.getElementById('kunci').value;
 
-            if (!pesan || !kunci) {
-                alert("Pesan dan Kunci tidak boleh kosong!");
+            if (!pesan || !whatsapp) {
+                alert("Nomor WA dan Pesan wajib diisi!");
                 return;
             }
 
             fetch('/generate_link', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nama: nama, pesan: pesan, kunci: kunci })
+                body: JSON.stringify({ nama: nama, whatsapp: whatsapp, pesan: pesan })
             })
             .then(response => response.json())
             .then(data => {
