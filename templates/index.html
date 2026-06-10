@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BearLock - Secure Gate</title>
+    <title>BearLock - Gate</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body { background-color: #fcf8f2; color: #4a3f35; font-family: 'Segoe UI', sans-serif; }
@@ -22,31 +22,17 @@
             <div class="card p-4">
                 <div class="card-body">
                     
-                    {% if status == 'LOCKED' %}
-                        <div class="alert alert-danger text-center">
-                            <h4>❌ Pesan Terkunci</h4>
-                            <p>{{ error_msg }}</p>
-                        </div>
-                        
-                    {% elif status == 'READ' %}
-                        <div class="alert alert-warning text-center">
-                            <h4>⚠️ Pesan Hangus</h4>
-                            <p>{{ error_msg }}</p>
-                        </div>
-                        
-                    {% elif status == 'SUCCESS' %}
+                    {% if success %}
                         <div class="alert alert-success text-center">
-                            <h4>🔓 OTP Terverifikasi</h4>
-                            <p>Pesan berhasil dibuka.</p>
+                            <h4>🔓 OTP Benar</h4>
                         </div>
                         <div class="mt-3">
                             <label>Pesan Rahasia dari <b>{{ sender }}</b>:</label>
                             <textarea class="form-control" rows="5" readonly>{{ plaintext }}</textarea>
                         </div>
-                        
                     {% else %}
                         <form method="POST">
-                            <p class="text-center">Pesan ini dilindungi enkripsi AES-256. Silakan masukkan kode OTP.</p>
+                            <p class="text-center">Masukkan kode OTP untuk mendekripsi pesan.</p>
                             
                             {% with messages = get_flashed_messages(with_categories=true) %}
                                 {% if messages %}
@@ -57,9 +43,9 @@
                             {% endwith %}
 
                             <div class="form-group">
-                                <input type="text" name="otp" class="form-control text-center" placeholder="Masukkan 6 Digit OTP" required maxlength="6">
+                                <input type="text" name="otp" class="form-control text-center" placeholder="Masukkan OTP" required maxlength="6">
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Buka Pesan Rahasia</button>
+                            <button type="submit" class="btn btn-primary btn-block">Buka Pesan</button>
                         </form>
                     {% endif %}
                     
