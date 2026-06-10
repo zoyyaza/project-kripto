@@ -161,7 +161,11 @@
                 <div class="panel-title">DATA HUBUNGAN LANGSUNG</div>
                 <div class="input-group">
                     <label> NAMA PENGIRIM:</label>
-                    <input type="text" id="nama" class="input-box" placeholder="Contoh: Jule" required>
+                    <input type="text" id="nama" class="input-box" placeholder="Contoh: aza" required>
+                </div>
+                <div class="input-group">
+                    <label> NAMA PENERIMA:</label>
+                    <input type="text" id="penerima" class="input-box" placeholder="Contoh: Budi" required>
                 </div>
                 <div class="input-group">
                     <label> NO WHATSAPP TUJUAN:</label>
@@ -246,18 +250,19 @@
     <script>
         function processCrypto() {
             const nama = document.getElementById('nama').value;
+            const penerima = document.getElementById('penerima').value;
             const whatsapp = document.getElementById('whatsapp').value;
             const pesan = document.getElementById('pesan').value;
 
-            if (!pesan || !whatsapp) {
-                alert("Nomor WA dan Pesan wajib diisi!");
+            if (!pesan || !whatsapp || !penerima) {
+                alert("Semua kolom input wajib diisi!");
                 return;
             }
 
             fetch('/generate_link', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nama: nama, whatsapp: whatsapp, pesan: pesan })
+                body: JSON.stringify({ nama: nama, penerima: penerima, whatsapp: whatsapp, pesan: pesan })
             })
             .then(response => response.json())
             .then(data => {
