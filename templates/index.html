@@ -3,253 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bear-Lock OTP Mailer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-    
+    <title>BearLock - Secure Gate</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(135deg, #fceddb 0%, #f3b1be 50%, #bb9371 100%);
-            margin: 0;
-            padding: 30px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #533e31;
-        }
-
-        .dashboard-container {
-            width: 100%;
-            max-width: 700px;
-            background: rgba(255, 250, 245, 0.98);
-            border-radius: 40px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(83, 62, 49, 0.2);
-            border: 4px solid #ffffff;
-            box-sizing: border-box;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px dashed #bb9371;
-            padding-bottom: 20px;
-        }
-
-        h1 { font-family: 'Fredoka', sans-serif; color: #533e31; margin: 0; font-size: 26px; }
-
-        .grid-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 650px) { .grid-layout { grid-template-columns: 1fr; } }
-
-        .panel-title {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 14px;
-            color: #bb9371;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .input-group { margin-bottom: 18px; }
-        .input-group label { font-size: 12px; font-weight: 700; display: block; margin-bottom: 6px; }
-
-        .input-box {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #fceddb;
-            border-radius: 15px;
-            font-family: 'Quicksand', sans-serif;
-            font-size: 14px;
-            font-weight: 600;
-            box-sizing: border-box;
-            background-color: #ffffff;
-        }
-
-        .output-panel {
-            background: #fffbf7;
-            border-radius: 25px;
-            padding: 22px;
-            border: 2px solid #fceddb;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .live-preview {
-            background: #533e31;
-            padding: 15px;
-            border-radius: 15px;
-            min-height: 120px;
-            font-family: 'Fira Code', monospace;
-            font-size: 12px;
-            color: #fceddb;
-            word-break: break-all;
-            border-left: 5px solid #f3b1be;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 18px;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 14px;
-            cursor: pointer;
-            font-weight: 600;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            box-sizing: border-box;
-        }
-
-        .btn-generate { background: linear-gradient(135deg, #bb9371 0%, #f3b1be 100%); color: white; }
-        .btn-wa { background-color: #25D366; color: white; display: none; }
-        .btn-back { background-color: #533e31; color: white; margin-top: 15px; }
-        .btn-decrypt { background-color: #f3b1be; color: #533e31; margin-top: 10px; }
-
-        .success-box {
-            background-color: #e8f5e9;
-            border: 2px solid #81c784;
-            padding: 25px;
-            border-radius: 25px;
-            color: #2e7d32;
-        }
-
-        .challenge-box {
-            background-color: #fffde7;
-            border: 2px solid #fff59d;
-            padding: 25px;
-            border-radius: 25px;
-            color: #f57f17;
-            text-align: left;
-        }
-
-        .footer-bar { text-align: center; font-size: 11px; color: #a07a66; margin-top: 25px; font-weight: bold; }
+        body { background-color: #fcf8f2; color: #4a3f35; font-family: 'Segoe UI', sans-serif; }
+        .card { border: none; border-radius: 15px; background-color: #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .btn-primary { background-color: #ffb7b2; border: none; color: #4a3f35; font-weight: bold; }
+        .btn-primary:hover { background-color: #ffa49e; }
     </style>
 </head>
 <body>
-
-    <div class="dashboard-container">
-        
-        {% if not mode %}
-        <div class="header">
-            <h1> KOTAK PESAN RAHASIA </h1>
-            <div style="font-size: 12px; color: #a07a66; margin-top: 6px; font-weight: bold;">✨ Enkripsi Kriptografi dengan Autentikasi OTP Otomatis ✨</div>
-        </div>
-
-        <div class="grid-layout">
-            <div>
-                <div class="panel-title">DATA HUBUNGAN LANGSUNG</div>
-                <div class="input-group">
-                    <label> NAMA PENGIRIM:</label>
-                    <input type="text" id="nama" class="input-box" placeholder="Contoh: Jule" required>
-                </div>
-                <div class="input-group">
-                    <label> NO WHATSAPP TUJUAN:</label>
-                    <input type="text" id="whatsapp" class="input-box" placeholder="Contoh: 08123456789" required>
-                </div>
-                <div class="input-group">
-                    <label>ISI PESAN RAHASIA:</label>
-                    <input type="text" id="pesan" class="input-box" placeholder="Ketik isi laporan/pesan rahasia..." required>
-                </div>
-                <button type="button" class="btn btn-generate" onclick="processCrypto()">🚀 GENERATE & BYPASS TO WA</button>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="text-center mb-4">
+                <h2>🐻 BearLock Secure Mail</h2>
             </div>
+            <div class="card p-4">
+                <div class="card-body">
+                    
+                    {% if status == 'LOCKED' %}
+                        <div class="alert alert-danger text-center">
+                            <h4>❌ Pesan Terkunci</h4>
+                            <p>{{ error_msg }}</p>
+                        </div>
+                        
+                    {% elif status == 'READ' %}
+                        <div class="alert alert-warning text-center">
+                            <h4>⚠️ Pesan Hangus</h4>
+                            <p>{{ error_msg }}</p>
+                        </div>
+                        
+                    {% elif status == 'SUCCESS' %}
+                        <div class="alert alert-success text-center">
+                            <h4>🔓 OTP Terverifikasi</h4>
+                            <p>Pesan berhasil dibuka.</p>
+                        </div>
+                        <div class="mt-3">
+                            <label>Pesan Rahasia dari <b>{{ sender }}</b>:</label>
+                            <textarea class="form-control" rows="5" readonly>{{ plaintext }}</textarea>
+                        </div>
+                        
+                    {% else %}
+                        <form method="POST">
+                            <p class="text-center">Pesan ini dilindungi enkripsi AES-256. Silakan masukkan kode OTP.</p>
+                            
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    {% for category, message in messages %}
+                                        <div class="alert alert-danger">{{ message }}</div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
 
-            <div class="output-panel">
-                <div>
-                    <div class="panel-title">SYSTEM SYSTEM PAYLOAD TOKEN (BASE64)</div>
-                    <div id="token-box" class="live-preview">Menunggu perintah eksekusi data...</div>
-                </div>
-                <div>
-                    <a id="wa-btn" href="#" target="_blank" class="btn btn-wa">💬 TRANSMIT DIRECT TO TARGET NUMBER</a>
+                            <div class="form-group">
+                                <input type="text" name="otp" class="form-control text-center" placeholder="Masukkan 6 Digit OTP" required maxlength="6">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Buka Pesan Rahasia</button>
+                        </form>
+                    {% endif %}
+                    
                 </div>
             </div>
-        </div>
-        {% endif %}
-
-        {% if mode == 'challenge' %}
-        <div class="header">
-            <h1>🚨 MULTI-FACTOR OTP CHALLENGE</h1>
-            <div style="font-size: 12px; color: #cc3333; margin-top: 6px; font-weight: bold;">Jalur Komunikasi Diamankan</div>
-        </div>
-
-        <div class="challenge-box">
-            <h3 style="margin-top: 0; font-family: 'Fredoka', sans-serif; color: #d84315;">🔒 Token Validasi Diperlukan</h3>
-            <p>Halo, ada kiriman pesan terenkripsi dari <strong>{{ nama }}</strong>. Untuk membuka brankas, silakan masukkan 6 digit kode OTP yang tertera pada chat WhatsApp Anda.</p>
-            
-            <form action="/decrypt_link?token={{ token }}" method="POST">
-                <div class="input-group" style="margin-top: 15px;">
-                    <label style="color: #d84315;">🔑 MASUKKAN 6 DIGIT OTP KUNCI:</label>
-                    <input type="text" name="otp_input" class="input-box" style="border-color: #ffe082; font-family: 'Fira Code', monospace; text-align: center; font-size: 18px; letter-spacing: 4px;" placeholder="******" maxlength="6" required>
-                </div>
-                <button type="submit" class="btn btn-decrypt"> DEKRIPSI PAYLOAD SEKARANG</button>
-            </form>
-        </div>
-        {% endif %}
-
-        {% if mode == 'success' %}
-        <div class="header">
-            <h1> DATA INTERPRETATION DECRYPTED</h1>
-            <div style="font-size: 12px; color: #a07a66; margin-top: 6px; font-weight: bold;">Data Autentikasi Berhasil Dicocokkan</div>
-        </div>
-
-        <div class="success-box">
-            <h3 style="margin-top: 0; font-family: 'Fredoka', sans-serif;"> Berhasil Dibongkar</h3>
-            <p><strong> Pengirim Valid:</strong> {{ nama }}</p>
-            <p><strong>🔑 Token OTP Validasi:</strong> <span style="font-family: 'Fira Code', monospace; background: #c8e6c9; padding: 2px 6px; border-radius: 5px;">{{ kunci }}</span></p>
-            <hr style="border: 0; border-top: 1px solid #81c784; margin: 15px 0;">
-            <p><strong> ISI PESAN SEBENARNYA:</strong></p>
-            <div style="background: white; padding: 15px; border-radius: 12px; font-weight: 600; color: #1b5e20;">
-                {{ pesan }}
-            </div>
-        </div>
-        <a href="/" class="btn btn-back">⬅️ KEMBALI KE DASHBOARD UTAMA</a>
-        {% endif %}
-
-        <div class="footer-bar">
-            ✨ by saza'a baasith 💖 ✨
         </div>
     </div>
-
-    <script>
-        function processCrypto() {
-            const nama = document.getElementById('nama').value;
-            const whatsapp = document.getElementById('whatsapp').value;
-            const pesan = document.getElementById('pesan').value;
-
-            if (!pesan || !whatsapp) {
-                alert("Nomor WA dan Pesan wajib diisi!");
-                return;
-            }
-
-            fetch('/generate_link', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nama: nama, whatsapp: whatsapp, pesan: pesan })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
-                } else {
-                    document.getElementById('token-box').innerText = data.token;
-                    const waBtn = document.getElementById('wa-btn');
-                    waBtn.href = data.wa_link;
-                    waBtn.style.display = 'block';
-                }
-            })
-            .catch(error => {
-                alert("Gagal terhubung ke server.");
-            });
-        }
-    </script>
+</div>
 </body>
 </html>

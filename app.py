@@ -1,116 +1,169 @@
-from flask import Flask, render_template, request, jsonify
-import base64
-import random
-import urllib.parse
+import os
+import sqlite3
 import hashlib
+import base64
+from flask import Flask, render_template, request, flash, redirect, url_for
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 
 app = Flask(__name__)
+app.secret_key = "BEARLOCK_SECRET_KEY"
+DATABASE = 'crypto.db'
 
-# --- ENGINE CRYPTO BARU: AES-256 CBC MODE ---
-def get_aes_key_and_iv(otp_string):
-    """Mengubah OTP 6-digit menjadi Kunci 32-byte (AES-256) & IV 16-byte menggunakan SHA-256"""
-    hashed = hashlib.sha256(otp_string.encode('utf-8')).digest()
-    key = hashed          # 32 byte untuk AES-256
-    iv = hashed[:16]      # 16 byte pertama sebagai Initialization Vector (IV)
-    return key, iv
+def get_db_connection():
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    return conn
 
-def aes_encrypt(plaintext, otp_key):
-    key, iv = get_aes_key_and_iv(otp_key)
-    
-    # Tambahkan padding PKCS7 agar panjang data sesuai kelipatan blok AES (16 byte)
+# MEMBUAT TABEL DATABASE BARU DENGAN FITUR OTP_ATTEMPTS DAN STATUS
+def init_db():
+    conn = get_db_connection()
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            sender_name TEXT NOT NULL,
+            whatsapp_number TEXT NOT NULL,
+            ciphertext TEXT NOT NULL,
+            otp_hash TEXT NOT NULL,
+            otp_attempts INTEGER DEFAULT 0,
+            status TEXT DEFAULT 'ACTIVE'
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+# MESIN ENKRIPSI AES-256
+def aes_encrypt(plaintext, otp_string):
+    key = hashlib.sha256(otp_string.encode()).digest()
+    iv = os.urandom(16)
     padder = padding.PKCS7(128).padder()
-    padded_data = padder.update(plaintext.encode('utf-8')) + padder.finalize()
-    
-    # Proses Enkripsi AES-CBC
-    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    padded_data = padder.update(plaintext.encode()) + padder.finalize()
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
     encryptor = cipher.encryptor()
     ciphertext = encryptor.update(padded_data) + encryptor.finalize()
-    
-    return ciphertext.hex()
+    return base64.b64encode(iv + ciphertext).decode('utf-8')
 
-def aes_decrypt(ciphertext_hex, otp_key):
+# MESIN DEKRIPSI AES-256
+def aes_decrypt(ciphertext_b64, otp_string):
     try:
-        key, iv = get_aes_key_and_iv(otp_key)
-        ciphertext = bytes.fromhex(ciphertext_hex)
-        
-        # Proses Dekripsi AES-CBC
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+        key = hashlib.sha256(otp_string.encode()).digest()
+        raw_data = base64.b64decode(ciphertext_b64)
+        iv = raw_data[:16]
+        actual_ciphertext = raw_data[16:]
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
         decryptor = cipher.decryptor()
-        decrypted_padded_data = decryptor.update(ciphertext) + decryptor.finalize()
-        
-        # Lepaskan padding PKCS7 untuk mengambil teks asli
-        unpadder = padding.PKCS7(128).unpadder()
-        plaintext = unpadder.update(decrypted_padded_data) + unpadder.finalize()
+        padded_plaintext = decryptor.update(actual_ciphertext) + decryptor.finalize()
+        unpadded_context = padding.PKCS7(128).unpadder()
+        plaintext = unpadded_context.update(padded_plaintext) + unpadded_context.finalize()
         return plaintext.decode('utf-8')
     except Exception:
-        # Jika OTP salah, paksa sistem mengeluarkan teks acak buatan
-        karakter_acak = "#$%^&*@!~+=?><ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-        return "eits no no kepo ya" + "".join(random.choices(karakter_acak, k=30))
+        return None
 
-# --- ROUTES FLASK ---
-@app.route('/', methods=['GET'])
+# HALAMAN UTAMA: KIRIM PESAN
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        sender = request.form.get('sender_name')
+        whatsapp = request.form.get('whatsapp_number')
+        pesan = request.form.get('message')
+        otp = request.form.get('otp') # Input OTP dari user (6 digit)
+        
+        # Hash OTP untuk disimpan di DB
+        otp_hash = hashlib.sha256(otp.encode()).hexdigest()
+        
+        # Enkripsi pesan menggunakan AES-256
+        ciphertext = aes_encrypt(pesan, otp)
+        
+        # Simpan ke Database
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO messages (sender_name, whatsapp_number, ciphertext, otp_hash, otp_attempts, status)
+            VALUES (?, ?, ?, ?, 0, 'ACTIVE')
+        ''', (sender, whatsapp, ciphertext, otp_hash))
+        conn.commit()
+        message_id = cursor.lastrowid
+        conn.close()
+        
+        # Buat link untuk WhatsApp
+        share_url = url_for('view_message', id=message_id, _external=True)
+        whatsapp_url = f"https://api.whatsapp.com/send?phone={whatsapp}&text=Halo,%20ada%20pesan%20rahasia%20BearLock%20untukmu.%20Buka%20link:%20{share_url}%20dan%20masukkan%20OTP:%20{otp}"
+        
+        return render_template('index.html', whatsapp_url=whatsapp_url, share_url=share_url)
+        
     return render_template('index.html')
 
-@app.route('/generate_link', methods=['POST'])
-def generate_link():
-    data = request.json
-    nama = data.get('nama', '')
-    whatsapp = data.get('whatsapp', '')
-    pesan = data.get('pesan', '')
+# HALAMAN GERBANG OTP: VERIFIKASI & DEKRIPSI (DENGAN FITUR PEMBATASAN & HANGUS)
+@app.route('/view/<int:id>', methods=['GET', 'POST'])
+def view_message(id):
+    conn = get_db_connection()
+    message = conn.execute('SELECT * FROM messages WHERE id = ?', (id,)).fetchone()
     
-    if not pesan or not whatsapp:
-        return jsonify({'error': 'Nomor WA dan Pesan wajib diisi!'}), 400
+    if message is None:
+        conn.close()
+        return "Pesan tidak ditemukan", 404
         
-    if whatsapp.startswith('0'):
-        whatsapp = '62' + whatsapp[1:]
-    elif whatsapp.startswith('+'):
-        whatsapp = whatsapp.replace('+', '')
-        
-    # Generate 6 Digit OTP otomatis oleh sistem
-    otp_key = str(random.randint(100000, 999999))
-    
-    # EKSEKUSI AES-256
-    ciphertext_hex = aes_encrypt(pesan, otp_key)
-    
-    # Token Base64 (Hanya berisi nama dan teks hex AES)
-    raw_token = f"{nama}|{ciphertext_hex}"
-    secure_token = base64.b64encode(raw_token.encode('utf-8')).decode('utf-8')
-    
-    base_url = request.url_root
-    full_crypto_link = f"{base_url}decrypt_link?token={secure_token}"
-    
-    wa_text = f"<b> BEAR-LOCK SECURE MAIL (AES-256)</b>\n\nHalo, ada pesan rahasia khusus untuk Anda dari *{nama}*.\n\n🔗 *Link Akses*:\n{full_crypto_link}\n\n🔑 *KODE OTP VALIDASI ANDA*:\n{otp_key}\n\n<i>(Pesan dilindungi enkripsi blok AES-256, jangan bocorkan OTP ini)</i>"
-    
-    wa_direct_link = f"https://api.whatsapp.com/send?phone={whatsapp}&text={urllib.parse.quote(wa_text)}"
-    
-    return jsonify({
-        'token': secure_token,
-        'wa_link': wa_direct_link
-    })
+    # FITUR 1: Jika status database sudah LOCKED
+    if message['status'] == 'LOCKED':
+        conn.close()
+        return render_template('challenge.html', 
+                               error_msg="Pesan telah dikunci permanen karena melebihi batas percobaan OTP.", 
+                               status="LOCKED")
+                               
+    # FITUR 2: Jika status database sudah READ (One-Time Read)
+    if message['status'] == 'READ':
+        conn.close()
+        return render_template('challenge.html', 
+                               error_msg="Pesan ini telah dibuka sebelumnya dan tidak dapat diakses kembali.", 
+                               status="READ")
 
-@app.route('/decrypt_link', methods=['GET', 'POST'])
-def decrypt_link():
-    token = request.args.get('token', '')
-    if not token:
-        return "Token Tidak Valid!", 400
+    if request.method == 'POST':
+        input_otp = request.form.get('otp', '').strip()
+        input_otp_hash = hashlib.sha256(input_otp.encode()).hexdigest()
         
-    try:
-        decoded_str = base64.b64decode(token.encode('utf-8')).decode('utf-8')
-        nama, ciphertext_hex = decoded_str.split('|')
-    except:
-        return "Token rusak atau dimanipulasi!", 400
+        # JIKA OTP SALAH
+        if input_otp_hash != message['otp_hash']:
+            new_attempts = message['otp_attempts'] + 1
+            sisa_percobaan = 3 - new_attempts
+            
+            if new_attempts >= 3:
+                # Kunci pesan permanen di database
+                conn.execute('UPDATE messages SET otp_attempts = ?, status = ? WHERE id = ?', 
+                             (new_attempts, 'LOCKED', id))
+                conn.commit()
+                conn.close()
+                return render_template('challenge.html', 
+                                       error_msg="Pesan telah dikunci permanen karena melebihi batas percobaan OTP.", 
+                                       status="LOCKED")
+            else:
+                # Update sisa percobaan salah
+                conn.execute('UPDATE messages SET otp_attempts = ? WHERE id = ?', (new_attempts, id))
+                conn.commit()
+                conn.close()
+                flash(f"OTP tidak valid. Sisa percobaan: {sisa_percobaan}", "danger")
+                return redirect(url_for('view_message', id=id))
+        
+        # JIKA OTP BENAR
+        decrypted_text = aes_decrypt(message['ciphertext'], input_otp)
+        
+        if decrypted_text is None:
+            conn.close()
+            flash("Gagal mendekripsi data. Silakan coba lagi.", "danger")
+            return redirect(url_for('view_message', id=id))
+            
+        # Sukses dibuka! Ubah status jadi 'READ' agar langsung hangus
+        conn.execute('UPDATE messages SET status = ? WHERE id = ?', ('READ', id))
+        conn.commit()
+        conn.close()
+        
+        return render_template('challenge.html', 
+                               plaintext=decrypted_text, 
+                               sender=message['sender_name'], 
+                               status="SUCCESS")
 
-    if request.method == 'GET':
-        return render_template('index.html', mode='challenge', nama=nama, token=token)
-        
-    otp_input = request.form.get('otp_input', '')
-    original_pesan = aes_decrypt(ciphertext_hex, otp_input)
-    
-    return render_template('index.html', mode='success', nama=nama, pesan=original_pesan, kunci=otp_input)
+    conn.close()
+    return render_template('challenge.html', status="ACTIVE")
 
 if __name__ == '__main__':
+    init_db()
     app.run(debug=True)
