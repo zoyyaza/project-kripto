@@ -65,7 +65,7 @@ def generate_link():
     base_url = request.url_root
     full_crypto_link = f"{base_url}decrypt_link?token={secure_token}"
     
-    # Format teks pesan bersih tanpa HTML, menggunakan link normal yang panjang
+    # Pesan bersih dan manis dengan emoji bawaan Mochi Space
     wa_text = f"Halo, ada pesan rahasia khusus untuk Anda dari *{nama}*.\n\n🔗 *Link Akses*:\n{full_crypto_link}\n\n🔑 *KODE OTP VALIDASI ANDA*:\n{otp_key}\n\n_ (Pesan hanya bisa dibuka 1x dan maksimal 3x percobaan OTP!)_"
     wa_direct_link = f"https://api.whatsapp.com/send?phone={whatsapp}&text={urllib.parse.quote(wa_text)}"
     

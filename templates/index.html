@@ -3,171 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bear-Lock OTP Mailer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <title>Mochi Secure Mailer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Comfortaa:wght@500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
+        :root {
+            --lavender: #E8E0F0;
+            --lavender-deep: #D4C8E8;
+            --peachy: #FFE5E5;
+            --peachy-deep: #FFCECE;
+            --mint: #E0F5EE;
+            --mint-deep: #C5EBE0;
+            --cream: #FFFAF5;
+            --coral: #FF9B9B;
+            --coral-hover: #FF8585;
+            --text-dark: #6B5252;
+            --text-light: #8B7878;
+            --white: #FFFFFF;
+        }
+
         body {
-            font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(135deg, #fceddb 0%, #f3b1be 50%, #bb9371 100%);
+            font-family: 'Nunito', sans-serif;
+            background: var(--cream);
+            background-image: radial-gradient(var(--peachy) 1.5px, transparent 1.5px), radial-gradient(var(--lavender) 1.5px, var(--cream) 1.5px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
             margin: 0;
             padding: 30px 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            color: #533e31;
+            color: var(--text-dark);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Dekorasi Elemen Balon Mengapung Sesuai Tema Mochi */
+        .bubble-deco {
+            position: absolute;
+            background: rgba(232, 224, 240, 0.6);
+            border-radius: 50%;
+            z-index: -1;
         }
 
         .dashboard-container {
             width: 100%;
-            max-width: 700px;
-            background: rgba(255, 250, 245, 0.98);
-            border-radius: 40px;
+            max-width: 720px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
             padding: 40px;
-            box-shadow: 0 20px 40px rgba(83, 62, 49, 0.2);
-            border: 4px solid #ffffff;
+            box-shadow: 0 15px 35px rgba(107, 82, 82, 0.1);
+            border: 6px solid var(--white);
             box-sizing: border-box;
+            backdrop-filter: blur(10px);
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px dashed #bb9371;
-            padding-bottom: 20px;
+            margin-bottom: 35px;
+            border-bottom: 3px dotted var(--lavender-deep);
+            padding-bottom: 25px;
         }
 
-        h1 { font-family: 'Fredoka', sans-serif; color: #533e31; margin: 0; font-size: 26px; }
+        h1 { 
+            font-family: 'Comfortaa', cursive; 
+            color: var(--text-dark); 
+            margin: 0; 
+            font-size: 28px;
+            font-weight: 700;
+        }
 
         .grid-layout {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 25px;
+            gap: 30px;
             margin-top: 20px;
         }
 
-        @media (max-width: 650px) { .grid-layout { grid-template-columns: 1fr; } }
+        @media (max-width: 680px) { 
+            .grid-layout { grid-template-columns: 1fr; } 
+        }
 
         .panel-title {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 14px;
-            color: #bb9371;
+            font-family: 'Comfortaa', cursive;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-light);
             margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 6px;
+            letter-spacing: 0.5px;
         }
 
-        .input-group { margin-bottom: 18px; }
-        .input-group label { font-size: 12px; font-weight: 700; display: block; margin-bottom: 6px; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { 
+            font-size: 13px; 
+            font-weight: 700; 
+            display: block; 
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
 
         .input-box {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #fceddb;
-            border-radius: 15px;
-            font-family: 'Quicksand', sans-serif;
+            padding: 14px 18px;
+            border: 2px solid var(--lavender-deep);
+            border-radius: 20px;
+            font-family: 'Nunito', sans-serif;
             font-size: 14px;
             font-weight: 600;
             box-sizing: border-box;
-            background-color: #ffffff;
+            background-color: var(--white);
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+        }
+
+        .input-box:focus {
+            outline: none;
+            border-color: var(--coral);
+            box-shadow: 0 0 0 4px var(--peachy);
         }
 
         .output-panel {
-            background: #fffbf7;
+            background: var(--cream);
             border-radius: 25px;
-            padding: 22px;
-            border: 2px solid #fceddb;
+            padding: 25px;
+            border: 2px dashed var(--lavender-deep);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
         .live-preview {
-            background: #533e31;
-            padding: 15px;
-            border-radius: 15px;
+            background: var(--white);
+            padding: 18px;
+            border-radius: 18px;
             min-height: 120px;
             font-family: 'Fira Code', monospace;
             font-size: 12px;
-            color: #fceddb;
+            color: var(--text-dark);
             word-break: break-all;
-            border-left: 5px solid #f3b1be;
+            border: 2px solid var(--lavender);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
         }
 
         .btn {
             width: 100%;
-            padding: 15px;
+            padding: 15px 20px;
             border: none;
-            border-radius: 18px;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 14px;
+            border-radius: 20px;
+            font-family: 'Comfortaa', cursive;
+            font-size: 13px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             text-align: center;
             text-decoration: none;
             display: inline-block;
             box-sizing: border-box;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(107, 82, 82, 0.05);
         }
 
-        .btn-generate { background: linear-gradient(135deg, #bb9371 0%, #f3b1be 100%); color: white; }
-        .btn-wa { background-color: #25D366; color: white; display: none; }
-        .btn-back { background-color: #533e31; color: white; margin-top: 15px; }
-        .btn-decrypt { background-color: #f3b1be; color: #533e31; margin-top: 10px; }
+        .btn-generate { 
+            background: var(--coral); 
+            color: var(--white); 
+        }
+        
+        .btn-generate:hover {
+            background: var(--coral-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-wa { 
+            background-color: #5ADBB5; /* Soft Mint Green */
+            color: var(--white); 
+            display: none; 
+        }
+        
+        .btn-wa:hover {
+            background-color: #46c7a1;
+            transform: translateY(-2px);
+        }
+
+        .btn-back { 
+            background-color: var(--lavender-deep); 
+            color: var(--text-dark); 
+            margin-top: 20px; 
+        }
+        .btn-back:hover { background-color: #c2b4db; }
+
+        .btn-decrypt { 
+            background-color: var(--coral); 
+            color: var(--white); 
+            margin-top: 15px; 
+        }
+        .btn-decrypt:hover { background-color: var(--coral-hover); }
 
         .success-box {
-            background-color: #e8f5e9;
-            border: 2px solid #81c784;
+            background-color: var(--mint);
+            border: 2px solid var(--mint-deep);
             padding: 25px;
             border-radius: 25px;
-            color: #2e7d32;
+            color: var(--text-dark);
         }
 
         .challenge-box {
-            background-color: #fffde7;
-            border: 2px solid #fff59d;
+            background-color: var(--peachy);
+            border: 2px solid var(--peachy-deep);
             padding: 25px;
             border-radius: 25px;
-            color: #f57f17;
+            color: var(--text-dark);
             text-align: left;
         }
 
         .alert-error {
-            background-color: #ffebee;
-            border: 2px solid #ef5350;
-            color: #c62828;
+            background-color: var(--peachy-deep);
+            border: 2px solid var(--coral);
+            color: #b33939;
             padding: 15px;
-            border-radius: 15px;
+            border-radius: 20px;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: center;
         }
 
-        .footer-bar { text-align: center; font-size: 11px; color: #a07a66; margin-top: 25px; font-weight: bold; }
+        .footer-bar { 
+            text-align: center; 
+            font-size: 12px; 
+            color: var(--text-light); 
+            margin-top: 30px; 
+            font-family: 'Comfortaa', cursive;
+            font-weight: 700; 
+        }
     </style>
 </head>
 <body>
+
+    <div class="bubble-deco" style="width: 120px; height: 120px; top: 10%; left: -50px; background: var(--peachy);"></div>
+    <div class="bubble-deco" style="width: 150px; height: 150px; bottom: 5%; right: -60px; background: var(--mint);"></div>
 
     <div class="dashboard-container">
         
         {% if not mode %}
         <div class="header">
-            <h1> KOTAK PESAN RAHASIA </h1>
-            <div style="font-size: 12px; color: #a07a66; margin-top: 6px; font-weight: bold;">✨ Enkripsi Kriptografi dengan Autentikasi OTP Otomatis ✨</div>
+            <h1>🌸 mochi secure mailer 🌸</h1>
+            <div style="font-size: 13px; color: var(--text-light); margin-top: 8px; font-weight: 700; font-family: 'Comfortaa', cursive;">cozy protection • cryptography system</div>
         </div>
 
         <div class="grid-layout">
             <div>
                 <div class="input-group">
-                    <label> NAMA PENGIRIM:</label>
+                    <label>✍️ NAMA PENGIRIM:</label>
                     <input type="text" id="nama" class="input-box" placeholder="Contoh: aza" required>
                 </div>
                 <div class="input-group">
-                    <label> NO WHATSAPP TUJUAN:</label>
+                    <label>📱 NO WHATSAPP TUJUAN:</label>
                     <input type="text" id="whatsapp" class="input-box" placeholder="Contoh: 08123456789" required>
                 </div>
                 <div class="input-group">
-                    <label>ISI PESAN RAHASIA:</label>
+                    <label>🔒 ISI PESAN RAHASIA:</label>
                     <input type="text" id="pesan" class="input-box" placeholder="Ketik isi laporan/pesan rahasia..." required>
                 </div>
                 <button type="button" class="btn btn-generate" onclick="processCrypto()">🚀 GENERATE LINK & BYPASS TO WA</button>
@@ -175,7 +273,7 @@
 
             <div class="output-panel">
                 <div>
-                    <div class="panel-title">SYSTEM SYSTEM PAYLOAD TOKEN (BASE64)</div>
+                    <div class="panel-title">✨ SYSTEM PAYLOAD TOKEN (BASE64)</div>
                     <div id="token-box" class="live-preview">Menunggu perintah eksekusi data...</div>
                 </div>
                 <div>
@@ -187,8 +285,8 @@
 
         {% if mode == 'challenge' %}
         <div class="header">
-            <h1>🚨 MULTI-FACTOR OTP CHALLENGE</h1>
-            <div style="font-size: 12px; color: #cc3333; margin-top: 6px; font-weight: bold;">Jalur Communication Diamankan</div>
+            <h1>🔒 safety validation</h1>
+            <div style="font-size: 13px; color: var(--text-light); margin-top: 8px; font-weight: 700; font-family: 'Comfortaa', cursive;">Jalur Komunikasi Diamankan</div>
         </div>
 
         {% if error_msg %}
@@ -199,13 +297,13 @@
 
         {% if "diblokir" not in error_msg and "hangus" not in error_msg %}
         <div class="challenge-box">
-            <h3 style="margin-top: 0; font-family: 'Fredoka', sans-serif; color: #d84315;">🔒 Token Validasi Diperlukan</h3>
+            <h3 style="margin-top: 0; font-family: 'Comfortaa', cursive; color: var(--text-dark);">🔑 Token Validasi Diperlukan</h3>
             <p>Halo, ada kiriman pesan terenkripsi dari <strong>{{ nama }}</strong>. Untuk membuka brankas, silakan masukkan 6 digit kode OTP yang tertera pada chat WhatsApp Anda.</p>
             
             <form action="/decrypt_link?token={{ token }}" method="POST">
-                <div class="input-group" style="margin-top: 15px;">
-                    <label style="color: #d84315;">🔑 MASUKKAN 6 DIGIT OTP KUNCI:</label>
-                    <input type="text" name="otp_input" class="input-box" style="border-color: #ffe082; font-family: 'Fira Code', monospace; text-align: center; font-size: 18px; letter-spacing: 4px;" placeholder="******" maxlength="6" required>
+                <div class="input-group" style="margin-top: 20px;">
+                    <label style="color: var(--text-dark);">👉 MASUKKAN 6 DIGIT OTP KUNCI:</label>
+                    <input type="text" name="otp_input" class="input-box" style="border-color: var(--coral); font-family: 'Fira Code', monospace; text-align: center; font-size: 20px; letter-spacing: 4px;" placeholder="******" maxlength="6" required>
                 </div>
                 <button type="submit" class="btn btn-decrypt"> DEKRIPSI PAYLOAD SEKARANG</button>
             </form>
@@ -220,17 +318,17 @@
 
         {% if mode == 'success' %}
         <div class="header">
-            <h1> DATA INTERPRETATION DECRYPTED</h1>
-            <div style="font-size: 12px; color: #a07a66; margin-top: 6px; font-weight: bold;">Data Autentikasi Berhasil Dicocokkan</div>
+            <h1>🔓 message decrypted</h1>
+            <div style="font-size: 13px; color: var(--text-light); margin-top: 8px; font-weight: 700; font-family: 'Comfortaa', cursive;">Autentikasi Berhasil Dicocokkan</div>
         </div>
 
         <div class="success-box">
-            <h3 style="margin-top: 0; font-family: 'Fredoka', sans-serif;"> Berhasil Dibongkar</h3>
-            <p><strong> Pengirim Valid:</strong> {{ nama }}</p>
-            <p><strong>🔑 Token OTP Validasi:</strong> <span style="font-family: 'Fira Code', monospace; background: #c8e6c9; padding: 2px 6px; border-radius: 5px;">{{ kunci }}</span></p>
-            <hr style="border: 0; border-top: 1px solid #81c784; margin: 15px 0;">
-            <p><strong> ISI PESAN SEBENARNYA:</strong></p>
-            <div style="background: white; padding: 15px; border-radius: 12px; font-weight: 600; color: #1b5e20;">
+            <h3 style="margin-top: 0; font-family: 'Comfortaa', cursive;">✨ Berhasil Dibongkar ✨</h3>
+            <p><strong>👤 Pengirim Valid:</strong> {{ nama }}</p>
+            <p><strong>🔑 Token OTP Validasi:</strong> <span style="font-family: 'Fira Code', monospace; background: var(--white); padding: 4px 10px; border-radius: 8px; border: 1px solid var(--mint-deep);">{{ kunci }}</span></p>
+            <hr style="border: 0; border-top: 2px dotted var(--mint-deep); margin: 20px 0;">
+            <p><strong>📝 ISI PESAN SEBENARNYA:</strong></p>
+            <div style="background: var(--white); padding: 20px; border-radius: 15px; font-weight: 700; color: var(--text-dark); border: 1px solid var(--mint-deep);">
                 {{ pesan }}
             </div>
         </div>
@@ -238,7 +336,7 @@
         {% endif %}
 
         <div class="footer-bar">
-            ✨ by saza'a baasith 💖 ✨
+            made with 💖 by saza'a baasith
         </div>
     </div>
 
