@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, jsonify, session
 import base64
 import random
 import urllib.parse
-import urllib.request
 import hashlib
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
@@ -11,16 +10,7 @@ from cryptography.hazmat.primitives import padding
 app = Flask(__name__)
 app.secret_key = "BEAR_LOCK_SUPER_SECRET_KEY_SANGAT_RAHASIA"
 
-# --- HELPER SHORTLINK TINYURL ---
-def shorten_url(long_url):
-    try:
-        api_url = f"http://tinyurl.com/api-create.php?url={urllib.parse.quote(long_url)}"
-        with urllib.request.urlopen(api_url, timeout=5) as response:
-            return response.read().decode('utf-8')
-    except Exception:
-        return long_url
-
-# --- ENGINE CRYPTO AES-256 ---
+# --- ENGINE CRYPTO AES-256 CBC MODE ---
 def get_aes_key_and_iv(otp_string):
     hashed = hashlib.sha256(otp_string.encode('utf-8')).digest()
     return hashed, hashed[:16]
@@ -45,7 +35,7 @@ def aes_decrypt(ciphertext_hex, otp_key):
     except Exception:
         return None
 
-# --- ROUTES ---
+# --- ROUTES FLASK ---
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
@@ -74,15 +64,14 @@ def generate_link():
     
     base_url = request.url_root
     full_crypto_link = f"{base_url}decrypt_link?token={secure_token}"
-    short_crypto_link = shorten_url(full_crypto_link)
     
-    # KEMBALI KE SEMULA: Menggunakan kata "Anda" langsung tanpa input nama penerima
-    wa_text = f"Halo, ada pesan rahasia khusus untuk Anda dari *{nama}*.\n\n🔗 *Link Akses*:\n{short_crypto_link}\n\n🔑 *KODE OTP VALIDASI ANDA*:\n{otp_key}\n\n_ (Pesan hanya bisa dibuka 1x dan maksimal 3x percobaan OTP!)_"
+    # Format teks pesan bersih tanpa HTML, menggunakan link normal yang panjang
+    wa_text = f"Halo, ada pesan rahasia khusus untuk Anda dari *{nama}*.\n\n🔗 *Link Akses*:\n{full_crypto_link}\n\n🔑 *KODE OTP VALIDASI ANDA*:\n{otp_key}\n\n_ (Pesan hanya bisa dibuka 1x dan maksimal 3x percobaan OTP!)_"
     wa_direct_link = f"https://api.whatsapp.com/send?phone={whatsapp}&text={urllib.parse.quote(wa_text)}"
     
     return jsonify({
         'token': secure_token,
-        'short_link': short_crypto_link,
+        'full_link': full_crypto_link,
         'wa_link': wa_direct_link
     })
 
