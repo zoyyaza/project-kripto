@@ -4,7 +4,6 @@ import random
 import urllib.parse
 import urllib.request
 import hashlib
-import json
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
@@ -12,16 +11,16 @@ from cryptography.hazmat.primitives import padding
 app = Flask(__name__)
 app.secret_key = "BEAR_LOCK_SUPER_SECRET_KEY_SANGAT_RAHASIA"
 
-# --- HELPER SHORTLINK (Mengubah Link Panjang Jadi Pendek via TinyURL) ---
+# --- HELPER SHORTLINK TINYURL ---
 def shorten_url(long_url):
     try:
         api_url = f"http://tinyurl.com/api-create.php?url={urllib.parse.quote(long_url)}"
         with urllib.request.urlopen(api_url, timeout=5) as response:
             return response.read().decode('utf-8')
     except Exception:
-        return long_url # Jika gagal/timeout, kembalikan link asli agar aplikasi tidak crash
+        return long_url
 
-# --- ENGINE CRYPTO AES-256 CBC MODE ---
+# --- ENGINE CRYPTO AES-256 ---
 def get_aes_key_and_iv(otp_string):
     hashed = hashlib.sha256(otp_string.encode('utf-8')).digest()
     return hashed, hashed[:16]
@@ -46,7 +45,7 @@ def aes_decrypt(ciphertext_hex, otp_key):
     except Exception:
         return None
 
-# --- ROUTES FLASK ---
+# --- ROUTES ---
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
@@ -55,12 +54,11 @@ def index():
 def generate_link():
     data = request.json
     nama = data.get('nama', '')
-    penerima = data.get('penerima', '') # Input baru: Nama Penerima
     whatsapp = data.get('whatsapp', '')
     pesan = data.get('pesan', '')
     
-    if not pesan or not whatsapp or not penerima:
-        return jsonify({'error': 'Semua kolom input wajib diisi!'}), 400
+    if not pesan or not whatsapp:
+        return jsonify({'error': 'Nomor WA dan Pesan wajib diisi!'}), 400
         
     if whatsapp.startswith('0'):
         whatsapp = '62' + whatsapp[1:]
@@ -76,16 +74,15 @@ def generate_link():
     
     base_url = request.url_root
     full_crypto_link = f"{base_url}decrypt_link?token={secure_token}"
-    
-    # Eksekusi pemendek link otomatis
     short_crypto_link = shorten_url(full_crypto_link)
     
-    # Format teks pesan WhatsApp bersih tanpa tag HTML (Menggunakan format markdown WA)
-    wa_text = f"Halo *{penerima}*, ada pesan rahasia khusus untuk Anda dari *{nama}*.\n\n🔗 *Link Akses*:\n{short_crypto_link}\n\n🔑 *KODE OTP VALIDASI ANDA*:\n{otp_key}\n\n_ (Pesan hanya bisa dibuka 1x dan maksimal 3x percobaan OTP!)_"
+    # KEMBALI KE SEMULA: Menggunakan kata "Anda" langsung tanpa input nama penerima
+    wa_text = f"Halo, ada pesan rahasia khusus untuk Anda dari *{nama}*.\n\n🔗 *Link Akses*:\n{short_crypto_link}\n\n🔑 *KODE OTP VALIDASI ANDA*:\n{otp_key}\n\n_ (Pesan hanya bisa dibuka 1x dan maksimal 3x percobaan OTP!)_"
     wa_direct_link = f"https://api.whatsapp.com/send?phone={whatsapp}&text={urllib.parse.quote(wa_text)}"
     
     return jsonify({
         'token': secure_token,
+        'short_link': short_crypto_link,
         'wa_link': wa_direct_link
     })
 
@@ -102,7 +99,6 @@ def decrypt_link():
         return "Token rusak atau dimanipulasi!", 400
 
     token_key = hashlib.md5(token.encode('utf-8')).hexdigest()
-    
     if token_key not in session:
         session[token_key] = {'attempts': 0, 'is_burned': False}
         
@@ -133,7 +129,6 @@ def decrypt_link():
         return render_template('index.html', mode='challenge', nama=nama, token=token, error_msg=msg)
 
     original_pesan = aes_decrypt(ciphertext_hex, otp_input)
-    
     state['is_burned'] = True
     session[token_key] = state
 

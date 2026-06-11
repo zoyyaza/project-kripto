@@ -89,7 +89,7 @@
             border-radius: 15px;
             min-height: 120px;
             font-family: 'Fira Code', monospace;
-            font-size: 12px;
+            font-size: 13px;
             color: #fceddb;
             word-break: break-all;
             border-left: 5px solid #f3b1be;
@@ -164,10 +164,6 @@
                     <input type="text" id="nama" class="input-box" placeholder="Contoh: aza" required>
                 </div>
                 <div class="input-group">
-                    <label> NAMA PENERIMA:</label>
-                    <input type="text" id="penerima" class="input-box" placeholder="Contoh: Budi" required>
-                </div>
-                <div class="input-group">
                     <label> NO WHATSAPP TUJUAN:</label>
                     <input type="text" id="whatsapp" class="input-box" placeholder="Contoh: 08123456789" required>
                 </div>
@@ -175,12 +171,12 @@
                     <label>ISI PESAN RAHASIA:</label>
                     <input type="text" id="pesan" class="input-box" placeholder="Ketik isi laporan/pesan rahasia..." required>
                 </div>
-                <button type="button" class="btn btn-generate" onclick="processCrypto()">🚀 GENERATE & BYPASS TO WA</button>
+                <button type="button" class="btn btn-generate" onclick="processCrypto()">🚀 GENERATE SHORTLINK & WA</button>
             </div>
 
             <div class="output-panel">
                 <div>
-                    <div class="panel-title">SYSTEM SYSTEM PAYLOAD TOKEN (BASE64)</div>
+                    <div class="panel-title">HASIL LINK SECURE (SHORTLINK)</div>
                     <div id="token-box" class="live-preview">Menunggu perintah eksekusi data...</div>
                 </div>
                 <div>
@@ -193,7 +189,7 @@
         {% if mode == 'challenge' %}
         <div class="header">
             <h1>🚨 MULTI-FACTOR OTP CHALLENGE</h1>
-            <div style="font-size: 12px; color: #cc3333; margin-top: 6px; font-weight: bold;">Jalur Komunikasi Diamankan</div>
+            <div style="font-size: 12px; color: #cc3333; margin-top: 6px; font-weight: bold;">Jalur Communication Diamankan</div>
         </div>
 
         {% if error_msg %}
@@ -250,26 +246,28 @@
     <script>
         function processCrypto() {
             const nama = document.getElementById('nama').value;
-            const penerima = document.getElementById('penerima').value;
             const whatsapp = document.getElementById('whatsapp').value;
             const pesan = document.getElementById('pesan').value;
 
-            if (!pesan || !whatsapp || !penerima) {
-                alert("Semua kolom input wajib diisi!");
+            if (!pesan || !whatsapp) {
+                alert("Nomor WA dan Pesan wajib diisi!");
                 return;
             }
+
+            document.getElementById('token-box').innerText = "Generating Shortlink Secure via TinyURL API...";
 
             fetch('/generate_link', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nama: nama, penerima: penerima, whatsapp: whatsapp, pesan: pesan })
+                body: JSON.stringify({ nama: nama, whatsapp: whatsapp, pesan: pesan })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
                     alert(data.error);
+                    document.getElementById('token-box').innerText = "Gagal memproses data.";
                 } else {
-                    document.getElementById('token-box').innerText = data.token;
+                    document.getElementById('token-box').innerText = data.short_link;
                     const waBtn = document.getElementById('wa-btn');
                     waBtn.href = data.wa_link;
                     waBtn.style.display = 'block';
@@ -277,6 +275,7 @@
             })
             .catch(error => {
                 alert("Gagal terhubung ke server.");
+                document.getElementById('token-box').innerText = "Koneksi terputus.";
             });
         }
     </script>
