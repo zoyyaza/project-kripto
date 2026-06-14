@@ -250,22 +250,22 @@
         
         {% if not mode %}
         <div class="header">
-            <h1>🌸 mochi secure mailer 🌸</h1>
-            <div style="font-size: 13px; color: var(--text-light); margin-top: 8px; font-weight: 700; font-family: 'Comfortaa', cursive;">cozy protection • cryptography system</div>
+            <h1>WHISPERLINK</h1>
+            <div style="font-size: 13px; color: var(--text-light); margin-top: 8px; font-weight: 700; font-family: 'Comfortaa', cursive;">End-to-End Encrypted Message Platform</div>
         </div>
 
         <div class="grid-layout">
             <div>
                 <div class="input-group">
-                    <label>✍️ NAMA PENGIRIM:</label>
+                    <label>NAMA PENGIRIM:</label>
                     <input type="text" id="nama" class="input-box" placeholder="Contoh: aza" required>
                 </div>
                 <div class="input-group">
-                    <label>📱 NO WHATSAPP TUJUAN:</label>
+                    <label>NO WHATSAPP TUJUAN:</label>
                     <input type="text" id="whatsapp" class="input-box" placeholder="Contoh: 08123456789" required>
                 </div>
                 <div class="input-group">
-                    <label>🔒 ISI PESAN RAHASIA:</label>
+                    <label>ISI PESAN RAHASIA:</label>
                     <input type="text" id="pesan" class="input-box" placeholder="Ketik isi laporan/pesan rahasia..." required>
                 </div>
                 <button type="button" class="btn btn-generate" onclick="processCrypto()">🚀 GENERATE LINK & BYPASS TO WA</button>
@@ -273,7 +273,7 @@
 
             <div class="output-panel">
                 <div>
-                    <div class="panel-title">✨ SYSTEM PAYLOAD TOKEN (BASE64)</div>
+                    <div class="panel-title">Tautan Aman Terenkripsi</div>
                     <div id="token-box" class="live-preview">Menunggu perintah eksekusi data...</div>
                 </div>
                 <div>
@@ -285,7 +285,7 @@
 
         {% if mode == 'challenge' %}
         <div class="header">
-            <h1>🔒 safety validation</h1>
+            <h1>Konfirmasi Pemilik Pesan</h1>
             <div style="font-size: 13px; color: var(--text-light); margin-top: 8px; font-weight: 700; font-family: 'Comfortaa', cursive;">Jalur Komunikasi Diamankan</div>
         </div>
 
@@ -302,10 +302,10 @@
             
             <form action="/decrypt_link?token={{ token }}" method="POST">
                 <div class="input-group" style="margin-top: 20px;">
-                    <label style="color: var(--text-dark);">👉 MASUKKAN 6 DIGIT OTP KUNCI:</label>
+                    <label style="color: var(--text-dark);"> MASUKKAN 6 DIGIT OTP KUNCI:</label>
                     <input type="text" name="otp_input" class="input-box" style="border-color: var(--coral); font-family: 'Fira Code', monospace; text-align: center; font-size: 20px; letter-spacing: 4px;" placeholder="******" maxlength="6" required>
                 </div>
-                <button type="submit" class="btn btn-decrypt"> DEKRIPSI PAYLOAD SEKARANG</button>
+                <button type="submit" class="btn btn-decrypt">BUKA PESAN</button>
             </form>
         </div>
         {% endif %}
@@ -318,16 +318,16 @@
 
         {% if mode == 'success' %}
         <div class="header">
-            <h1>🔓 message decrypted</h1>
+            <h1>PESAN BERHASIL DIBUKA</h1>
             <div style="font-size: 13px; color: var(--text-light); margin-top: 8px; font-weight: 700; font-family: 'Comfortaa', cursive;">Autentikasi Berhasil Dicocokkan</div>
         </div>
 
         <div class="success-box">
             <h3 style="margin-top: 0; font-family: 'Comfortaa', cursive;">✨ Berhasil Dibongkar ✨</h3>
-            <p><strong>👤 Pengirim Valid:</strong> {{ nama }}</p>
-            <p><strong>🔑 Token OTP Validasi:</strong> <span style="font-family: 'Fira Code', monospace; background: var(--white); padding: 4px 10px; border-radius: 8px; border: 1px solid var(--mint-deep);">{{ kunci }}</span></p>
+            <p><strong>Pengirim Valid:</strong> {{ nama }}</p>
+            <p><strong>Token OTP Validasi:</strong> <span style="font-family: 'Fira Code', monospace; background: var(--white); padding: 4px 10px; border-radius: 8px; border: 1px solid var(--mint-deep);">{{ kunci }}</span></p>
             <hr style="border: 0; border-top: 2px dotted var(--mint-deep); margin: 20px 0;">
-            <p><strong>📝 ISI PESAN SEBENARNYA:</strong></p>
+            <p><strong>ISI PESAN SEBENARNYA:</strong></p>
             <div style="background: var(--white); padding: 20px; border-radius: 15px; font-weight: 700; color: var(--text-dark); border: 1px solid var(--mint-deep);">
                 {{ pesan }}
             </div>
@@ -336,7 +336,7 @@
         {% endif %}
 
         <div class="footer-bar">
-            made with 💖 by saza'a baasith
+            built by saza'a baasith
         </div>
     </div>
 
